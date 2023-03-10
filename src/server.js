@@ -24,7 +24,7 @@ server.use(
         corsNext(
           createHttpError(
             400,
-            `origin ${currentOrigin} is not in the whitelist`
+            `origin ${currentOrigin} is not in  the whitelist`
           )
         );
       }
