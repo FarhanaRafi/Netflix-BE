@@ -31,6 +31,20 @@ server.use(
     },
   })
 );
+// {
+//     origin: (currentOrigin, corsNext) => {
+//       if (!currentOrigin || whitelist.indexOf(currentOrigin) !== -1) {
+//         corsNext(null, true);
+//       } else {
+//         corsNext(
+//           createHttpError(
+//             400,
+//             `origin ${currentOrigin} is not in  the whitelist`
+//           )
+//         );
+//       }
+//     },
+//   }
 
 // server.use(Express.static(publicFolderPath));
 server.use(Express.json());
