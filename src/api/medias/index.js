@@ -4,6 +4,8 @@ import { getMedia, writeMedia } from "../../lib/fs-tools.js";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import multer from "multer";
+import { getPDFReadableStream } from "../../lib/pdf-tools.js";
+import { pipeline } from "stream";
 
 const mediasRouter = Express.Router();
 
@@ -134,5 +136,24 @@ mediasRouter.post(
     }
   }
 );
+
+mediasRouter.get("/:mediaId/pdf", async (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", "attachment; filename=media.pdf");
+    const mediaArray = await getMedia();
+    const foundMedia = mediaArray.find(
+      (media) => media.imdbID === req.params.mediaId
+    );
+    const source = await getPDFReadableStream(foundMedia);
+    const destination = res;
+    pipeline(source, destination, (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default mediasRouter;
