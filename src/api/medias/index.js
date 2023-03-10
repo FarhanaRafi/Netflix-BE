@@ -6,25 +6,31 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import multer from "multer";
 import { getPDFReadableStream } from "../../lib/pdf-tools.js";
 import { pipeline } from "stream";
+import { checkMediaSchema, triggerBadRequest } from "./validation.js";
 
 const mediasRouter = Express.Router();
 
-mediasRouter.post("/", async (req, res, next) => {
-  try {
-    const newMedia = {
-      imdbID: uniqid(),
-      ...req.body,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    const mediaArray = await getMedia();
-    mediaArray.push(newMedia);
-    await writeMedia(mediaArray);
-    res.status(201).send({ imdbID: newMedia.imdbID });
-  } catch (error) {
-    next(error);
+mediasRouter.post(
+  "/",
+  checkMediaSchema,
+  triggerBadRequest,
+  async (req, res, next) => {
+    try {
+      const newMedia = {
+        imdbID: uniqid(),
+        ...req.body,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      const mediaArray = await getMedia();
+      mediaArray.push(newMedia);
+      await writeMedia(mediaArray);
+      res.status(201).send({ imdbID: newMedia.imdbID });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 mediasRouter.get("/", async (req, res, next) => {
   try {
